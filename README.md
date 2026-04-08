@@ -70,9 +70,9 @@ https://gutendex.com/books
 ## 📅 Milestone Progress
 
 * ✅ Milestone 1: Project Setup and Planning
-* 🔄 Milestone 2: API Integration (In Progress)
-* ⏳ Milestone 3: Core Features
-* ⏳ Milestone 4: Deployment
+* ✅ Milestone 2: API Integration 
+* ✅ Milestone 3: Core Features
+* ⏳ Milestone 4: Deployment (In Progress)
 
 ---
 
