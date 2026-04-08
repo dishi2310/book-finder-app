@@ -5,6 +5,11 @@ function App() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  const [searchQuery, setSearchQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState('default');
+  const [favorites, setFavorites] = useState([]);
+
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -32,6 +37,26 @@ function App() {
         <p>Discover classic literature dynamically fetched from Gutendex API</p>
       </header>
 
+      <div className="controls">
+        <input 
+          type="text" 
+          placeholder="Search by title or author..." 
+          value={searchQuery} 
+          onChange={(e) => setSearchQuery(e.target.value)} 
+          className="search-input"
+        />
+        <select 
+          value={sortOrder} 
+          onChange={(e) => setSortOrder(e.target.value)}
+          className="sort-select"
+        >
+          <option value="default">Sort by: Default</option>
+          <option value="az">Title (A-Z)</option>
+          <option value="za">Title (Z-A)</option>
+        </select>
+      </div>
+
+
       {loading ? (
         <div className="loading-state">
           <div className="spinner"></div>
@@ -43,8 +68,23 @@ function App() {
         </div>
       ) : (
         <main className="books-grid">
-          {books.map((book) => (
-            <div key={book.id} className="book-card">
+          {(() => {
+            let displayedBooks = books.filter(book => {
+              if (!searchQuery) return true;
+              const lowerQuery = searchQuery.toLowerCase();
+              const title = book.title.toLowerCase();
+              const author = book.authors && book.authors.length > 0 ? book.authors[0].name.toLowerCase() : '';
+              return title.includes(lowerQuery) || author.includes(lowerQuery);
+            });
+
+            if (sortOrder === 'az') {
+              displayedBooks.sort((a, b) => a.title.localeCompare(b.title));
+            } else if (sortOrder === 'za') {
+              displayedBooks.sort((a, b) => b.title.localeCompare(a.title));
+            }
+
+            return displayedBooks.map((book) => (
+              <div key={book.id} className="book-card">
               <div className="book-image-container">
                 {book.formats['image/jpeg'] ? (
                   <img
@@ -74,9 +114,16 @@ function App() {
                     );
                   })}
                 </div>
+                <button 
+                  className={`favorite-btn ${favorites.includes(book.id) ? 'active' : ''}`}
+                  onClick={() => setFavorites(prev => prev.includes(book.id) ? prev.filter(id => id !== book.id) : [...prev, book.id])}
+                >
+                  {favorites.includes(book.id) ? '❤️ Favorited' : '🤍 Favorite'}
+                </button>
               </div>
             </div>
-          ))}
+            ));
+          })()}
         </main>
       )}
     </div>
